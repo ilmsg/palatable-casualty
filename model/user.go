@@ -1,37 +1,46 @@
 package model
 
+type ActionType string
+
+const (
+	ActionCreate ActionType = "Create"
+	ActionRead   ActionType = "Read"
+	ActionUpdate ActionType = "Update"
+	ActionDelete ActionType = "Delete"
+)
+
 type User struct {
 	ID       uint   `json:"id"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
-type Authorize struct {
-	ID    uint   `json:"id"`
-	Title string `json:"title"` // Project, Task
+type Action struct {
+	ID          uint   `json:"id"`
+	Title       string `json:"title"` // Create, Read, Update, Delete
+	AuthorizeId uint
 }
 
-type Permission struct {
-	ID    uint   `json:"id"`
-	Title string `json:"title"` // Create, Read, Update, Delete
+type Authorize struct {
+	ID      uint   `json:"id"`
+	Title   string `json:"title"` // Project, Task
+	Actions []Action
+	RoleId  uint
 }
 
 type Role struct {
-	ID    uint   `json:"id"`
-	Title string `json:"title"` // ProjectOwner, Member
-}
-
-type RoleAuthorize struct {
-	ID          uint `json:"id"`
-	RoleId      uint
-	AuthorizeId uint
-	Permissions []Permission
+	ID         uint   `json:"id"`
+	Title      string `json:"title"` // ProjectOwner, Member
+	Authorizes []Authorize
 }
 
 type MemberRole struct {
-	ID     uint `json:"id"`
-	UserId uint
-	RoleId uint
+	ID        uint `json:"id"`
+	UserId    uint `json:"-"`
+	User      User `gorm:"foreignKey:UserId"`
+	RoleId    uint `json:"-"`
+	Role      Role `gorm:"foreignKey:RoleId"`
+	ProjectId uint
 }
 
 type Project struct {
